@@ -1,3 +1,6 @@
+using clinic_system_be.Models;
+using clinic_system_be.Repositories;
+using clinic_system_be.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,8 +13,21 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Register DbContext with connection string from appsettings.json
-builder.Services.AddDbContext<DbContext>(options =>
+builder.Services.AddDbContext<ClinicSystemDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString")));
+
+// Register services 
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPrescriptionService, PrescriptionService>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+
+// Register repositories
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IPrescriptionRepository, PrescriptionRepository>();
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+
+
 
 var app = builder.Build();
 
