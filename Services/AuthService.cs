@@ -1,8 +1,9 @@
-using clinic_system_be.DTOs;
+﻿using clinic_system_be.DTOs;
 using clinic_system_be.Models;
 using clinic_system_be.Repositories;
 using System.Security.Cryptography;
 using System.Text;
+using System.Globalization;
 
 namespace clinic_system_be.Services
 {
@@ -22,13 +23,31 @@ namespace clinic_system_be.Services
                 return new ServiceResponse<string> { Success = false, Message = "User already exists." };
             }
 
+            if (!DateOnly.TryParseExact(registerDTO.DateOfBirth, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateOnly dateOfBirth))
+            {
+                return new ServiceResponse<string> { Success = false, Message = "DateOfBirth must be in 'dd/MM/yyyy' format (e.g., 10/03/1990)." };
+            }
+
+            bool gender;
+            switch (registerDTO.Gender.ToLower())
+            {
+                case "male":
+                    gender = true;
+                    break;
+                case "female":
+                    gender = false;
+                    break;
+                default:
+                    return new ServiceResponse<string> { Success = false, Message = "Gender must be 'Male' or 'Female'." };
+            }
+
             var user = new User
             {
                 Email = registerDTO.Email,
                 Password = HashPassword(registerDTO.Password),
                 FullName = registerDTO.FullName,
-                DateOfBirth = registerDTO.DateOfBirth,
-                Gender = registerDTO.Gender,
+                DateOfBirth = dateOfBirth,
+                Gender = gender,
                 Address = registerDTO.Address,
                 PhoneNumber = registerDTO.PhoneNumber,
                 Status = 1,
@@ -47,7 +66,6 @@ namespace clinic_system_be.Services
                 return new ServiceResponse<string> { Success = false, Message = "Invalid credentials." };
             }
 
-            // Generate JWT token (omitted for brevity)
             return new ServiceResponse<string> { Success = true, Message = "Login successful.", Data = "JWT Token" };
         }
 
@@ -60,11 +78,9 @@ namespace clinic_system_be.Services
             }
         }
 
-
         private bool VerifyPassword(string password, string hashedPassword)
         {
             return HashPassword(password) == hashedPassword;
         }
-
     }
 }
