@@ -18,12 +18,6 @@ public partial class Prescription
     [StringLength(1000)]
     public string? Description { get; set; }
 
-    public int AppointmentId { get; set; }
-
-    [ForeignKey("AppointmentId")]
-    [InverseProperty("Prescriptions")]
-    public virtual Appointment Appointment { get; set; } = null!;
-
     [InverseProperty("Prescription")]
     public virtual ICollection<PrescriptionDetail> PrescriptionDetails { get; set; } = new List<PrescriptionDetail>();
 }

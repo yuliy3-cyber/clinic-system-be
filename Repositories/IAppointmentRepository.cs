@@ -1,4 +1,5 @@
-﻿using clinic_system_be.Models;
+﻿using clinic_system_be.DTOs.Appointment;
+using clinic_system_be.Models;
 
 namespace clinic_system_be.Repositories
 {
@@ -6,8 +7,8 @@ namespace clinic_system_be.Repositories
     {
         Task<IEnumerable<Appointment>> GetAllAppointments();
         Task<Appointment> GetAppointmentById(int id);
-        Task AddAppointment(Appointment appointment);
-        Task UpdateAppointment(Appointment appointment);
+        Task AddAppointment(AddAppointmentDTO appointment);
+        Task UpdateAppointment(UpdateAppointmentDTO appointment);
         Task DeleteAppointment(int id);
     }
 }

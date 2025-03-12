@@ -15,7 +15,6 @@ namespace clinic_system_be.Repositories
         public async Task<IEnumerable<Prescription>> GetAllPrescriptions()
         {
             return await _context.Prescriptions
-                .Include(p => p.Appointment)
                 .Include(p => p.PrescriptionDetails)
                 .ToListAsync();
         }
@@ -23,7 +22,6 @@ namespace clinic_system_be.Repositories
         public async Task<Prescription> GetPrescriptionById(int id)
         {
             return await _context.Prescriptions
-                .Include(p => p.Appointment)
                 .Include(p => p.PrescriptionDetails)
                 .FirstOrDefaultAsync(p => p.PrescriptionId == id);
         }

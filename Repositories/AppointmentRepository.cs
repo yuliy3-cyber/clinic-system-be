@@ -1,4 +1,5 @@
-﻿using clinic_system_be.Models;
+﻿using clinic_system_be.DTOs.Appointment;
+using clinic_system_be.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace clinic_system_be.Repositories
@@ -28,15 +29,32 @@ namespace clinic_system_be.Repositories
                 .FirstOrDefaultAsync(a => a.AppointmentId == id);
         }
 
-        public async Task AddAppointment(Appointment appointment)
+        public async Task AddAppointment(AddAppointmentDTO appointment)
         {
-            await _context.Appointments.AddAsync(appointment);
+            var newAppointment = new Appointment
+            {
+                PatientId = appointment.PatientId,
+                DoctorId = appointment.DoctorId,
+                AppointmentDate = appointment.AppointmentDate,
+                Status = 1,
+            };
+            await _context.Appointments.AddAsync(newAppointment);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAppointment(Appointment appointment)
+        public async Task UpdateAppointment(UpdateAppointmentDTO appointment)
         {
-            _context.Appointments.Update(appointment);
+            var newAppointment = new Appointment
+            {
+                AppointmentId = appointment.AppointmentId,
+                PatientId = appointment.PatientId,
+                DoctorId = appointment.DoctorId,
+                AppointmentDate = appointment.AppointmentDate,
+                Status = appointment.Status,
+                Diagnosis = appointment.Diagnosis,
+                Description = appointment.Description,
+            };
+            _context.Appointments.Update(newAppointment);
             await _context.SaveChangesAsync();
         }
 

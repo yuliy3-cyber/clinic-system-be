@@ -1,4 +1,5 @@
 ﻿using clinic_system_be.DTOs;
+using clinic_system_be.DTOs.Appointment;
 using clinic_system_be.Models;
 using clinic_system_be.Repositories;
 
@@ -29,13 +30,13 @@ namespace clinic_system_be.Services
             return new ServiceResponse<Appointment> { Data = appointment, Success = true };
         }
 
-        public async Task<ServiceResponse<string>> AddAppointment(Appointment appointment)
+        public async Task<ServiceResponse<string>> AddAppointment(AddAppointmentDTO appointment)
         {
             await _appointmentRepository.AddAppointment(appointment);
             return new ServiceResponse<string> { Success = true, Message = "Appointment added successfully." };
         }
 
-        public async Task<ServiceResponse<string>> UpdateAppointment(Appointment appointment)
+        public async Task<ServiceResponse<string>> UpdateAppointment(UpdateAppointmentDTO appointment)
         {
             await _appointmentRepository.UpdateAppointment(appointment);
             return new ServiceResponse<string> { Success = true, Message = "Appointment updated successfully." };

@@ -34,7 +34,4 @@ public partial class Appointment
     [ForeignKey("PatientId")]
     [InverseProperty("AppointmentPatients")]
     public virtual User Patient { get; set; } = null!;
-
-    [InverseProperty("Appointment")]
-    public virtual ICollection<Prescription> Prescriptions { get; set; } = new List<Prescription>();
 }

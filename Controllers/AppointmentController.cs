@@ -1,4 +1,4 @@
-﻿using clinic_system_be.Models;
+﻿using clinic_system_be.DTOs.Appointment;
 using clinic_system_be.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,14 +34,14 @@ namespace clinic_system_be.Controllers
         }
 
         [HttpPost("AddAppointment")]
-        public async Task<IActionResult> AddAppointment([FromBody] Appointment appointment)
+        public async Task<IActionResult> AddAppointment([FromBody] AddAppointmentDTO appointment)
         {
             var response = await _appointmentService.AddAppointment(appointment);
             return Ok(response);
         }
 
         [HttpPut("UpdateAppointment/{id}")]
-        public async Task<IActionResult> UpdateAppointment(int id, [FromBody] Appointment appointment)
+        public async Task<IActionResult> UpdateAppointment(int id, [FromBody] UpdateAppointmentDTO appointment)
         {
             appointment.AppointmentId = id;
             var response = await _appointmentService.UpdateAppointment(appointment);
