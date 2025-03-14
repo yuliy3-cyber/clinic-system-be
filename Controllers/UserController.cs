@@ -1,4 +1,5 @@
-﻿using clinic_system_be.Models;
+﻿using clinic_system_be.DTOs.User;
+using clinic_system_be.Models;
 using clinic_system_be.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,7 +35,7 @@ namespace clinic_system_be.Controllers
         }
 
         [HttpPost("AddUser")]
-        public async Task<IActionResult> AddUser([FromBody] User user)
+        public async Task<IActionResult> AddUser([FromBody] AddUserDTO user)
         {
             var response = await _userService.AddUser(user);
             return Ok(response);
@@ -52,6 +53,12 @@ namespace clinic_system_be.Controllers
         public async Task<IActionResult> DeleteUser(int id)
         {
             var response = await _userService.DeleteUser(id);
+            return Ok(response);
+        }
+        [HttpGet("GetUsersByRole/{role}")]
+        public async Task<IActionResult> GetUsersByRole(string role)
+        {
+            var response = await _userService.GetUsersByRole(role);
             return Ok(response);
         }
     }

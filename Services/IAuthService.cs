@@ -6,5 +6,6 @@ namespace clinic_system_be.Services
     {
         Task<ServiceResponse<string>> Register(RegisterDTO registerDTO);
         Task<ServiceResponse<string>> Login(LoginDTO loginDTO);
+        Task<ServiceResponse<string>> Logout();
     }
 }

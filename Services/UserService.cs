@@ -1,4 +1,5 @@
 ﻿using clinic_system_be.DTOs;
+using clinic_system_be.DTOs.User;
 using clinic_system_be.Models;
 using clinic_system_be.Repositories;
 using System.Security.Cryptography;
@@ -31,11 +32,15 @@ namespace clinic_system_be.Services
             return new ServiceResponse<User> { Data = user, Success = true };
         }
 
-        public async Task<ServiceResponse<string>> AddUser(User user)
+        public async Task<ServiceResponse<string>> AddUser(AddUserDTO user)
         {
             if (await _userRepository.UserExists(user.Email))
             {
                 return new ServiceResponse<string> { Success = false, Message = "User already exists." };
+            }
+            if (await _userRepository.PhoneNumberExists(user.PhoneNumber))
+            {
+                return new ServiceResponse<string> { Success = false, Message = "User with this phone number already exists." };
             }
 
             user.Password = HashPassword(user.Password);
@@ -53,6 +58,11 @@ namespace clinic_system_be.Services
         {
             await _userRepository.DeleteUser(id);
             return new ServiceResponse<string> { Success = true, Message = "User deleted successfully." };
+        }
+        public async Task<ServiceResponse<IEnumerable<User>>> GetUsersByRole(string role)
+        {
+            var users = await _userRepository.GetUsersByRole(role);
+            return new ServiceResponse<IEnumerable<User>> { Data = users, Success = true };
         }
 
         private string HashPassword(string password)

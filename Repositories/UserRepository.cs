@@ -1,3 +1,4 @@
+using clinic_system_be.DTOs.User;
 using clinic_system_be.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,9 +23,21 @@ namespace clinic_system_be.Repositories
             return await _context.Users.FindAsync(id);
         }
 
-        public async Task AddUser(User user)
+        public async Task AddUser(AddUserDTO user)
         {
-            await _context.Users.AddAsync(user);
+            var newUser = new User
+            {
+                Email = user.Email,
+                Password = user.Password,
+                Role = user.Role,
+                FullName = user.FullName,
+                DateOfBirth = user.DateOfBirth,
+                Gender = user.Gender,
+                Address = user.Address,
+                PhoneNumber = user.PhoneNumber,
+                Status = user.Status
+            };
+            await _context.Users.AddAsync(newUser);
             await _context.SaveChangesAsync();
         }
 
@@ -52,6 +65,14 @@ namespace clinic_system_be.Repositories
         public async Task<User> GetUserByEmail(string email)
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        }
+        public async Task<IEnumerable<User>> GetUsersByRole(string role)
+        {
+            return await _context.Users.Where(u => u.Role.ToLower() == role.ToLower()).ToListAsync();
+        }
+        public async Task<bool> PhoneNumberExists(string phoneNumber)
+        {
+            return await _context.Users.AnyAsync(u => u.PhoneNumber == phoneNumber);
         }
     }
 }

@@ -1,19 +1,24 @@
 ﻿using clinic_system_be.DTOs;
-using clinic_system_be.Models;
+using clinic_system_be.DTOs.User;
 using clinic_system_be.Repositories;
+using Microsoft.IdentityModel.Tokens;
+using System.Globalization;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using System.Globalization;
 
 namespace clinic_system_be.Services
 {
     public class AuthService : IAuthService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IConfiguration _configuration;
 
-        public AuthService(IUserRepository userRepository)
+        public AuthService(IUserRepository userRepository, IConfiguration configuration)
         {
             _userRepository = userRepository;
+            _configuration = configuration;
         }
 
         public async Task<ServiceResponse<string>> Register(RegisterDTO registerDTO)
@@ -21,6 +26,11 @@ namespace clinic_system_be.Services
             if (await _userRepository.UserExists(registerDTO.Email))
             {
                 return new ServiceResponse<string> { Success = false, Message = "User already exists." };
+            }
+
+            if (await _userRepository.PhoneNumberExists(registerDTO.PhoneNumber))
+            {
+                return new ServiceResponse<string> { Success = false, Message = "User with this phone number already exists." };
             }
 
             if (!DateOnly.TryParseExact(registerDTO.DateOfBirth, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateOnly dateOfBirth))
@@ -41,7 +51,7 @@ namespace clinic_system_be.Services
                     return new ServiceResponse<string> { Success = false, Message = "Gender must be 'Male' or 'Female'." };
             }
 
-            var user = new User
+            var user = new AddUserDTO
             {
                 Email = registerDTO.Email,
                 Password = HashPassword(registerDTO.Password),
@@ -66,7 +76,35 @@ namespace clinic_system_be.Services
                 return new ServiceResponse<string> { Success = false, Message = "Invalid credentials." };
             }
 
-            return new ServiceResponse<string> { Success = true, Message = "Login successful.", Data = "JWT Token" };
+            //Generate JWT Token
+            IConfiguration configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", true, true).Build();
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim("UserId", user.UserId.ToString()),
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:SecretKey"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var preparedToken = new JwtSecurityToken(
+                issuer: configuration["JWT:Issuer"],
+                audience: configuration["JWT:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(30),
+                signingCredentials: creds);
+
+            var token = new JwtSecurityTokenHandler().WriteToken(preparedToken);
+            return new ServiceResponse<string> { Success = true, Message = "Login successful.", Data = token };
+        }
+
+        public Task<ServiceResponse<string>> Logout()
+        {
+            // Placeholder for logout logic
+            return Task.FromResult(new ServiceResponse<string> { Success = true, Message = "Logout successful." });
         }
 
         public string HashPassword(string password)

@@ -36,5 +36,12 @@ namespace clinic_system_be.Controllers
             }
             return Ok(result);
         }
+
+        [HttpPost("Logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var response = await _authService.Logout();
+            return Ok(response);
+        }
     }
 }
