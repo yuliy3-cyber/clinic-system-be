@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 namespace clinic_system_be.Models
 {
@@ -38,9 +37,10 @@ namespace clinic_system_be.Models
         [StringLength(50)]
         public string Role { get; set; } = null!;
 
+        [JsonIgnore]
         [InverseProperty("Doctor")]
         public virtual ICollection<Appointment> AppointmentDoctors { get; set; } = new List<Appointment>();
-
+        [JsonIgnore]
         [InverseProperty("Patient")]
         public virtual ICollection<Appointment> AppointmentPatients { get; set; } = new List<Appointment>();
     }

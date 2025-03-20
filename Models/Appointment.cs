@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace clinic_system_be.Models;
 
@@ -27,10 +24,11 @@ public partial class Appointment
     [StringLength(1000)]
     public string? Description { get; set; }
 
+    //[JsonIgnore]
     [ForeignKey("DoctorId")]
     [InverseProperty("AppointmentDoctors")]
     public virtual User Doctor { get; set; } = null!;
-
+    //[JsonIgnore]
     [ForeignKey("PatientId")]
     [InverseProperty("AppointmentPatients")]
     public virtual User Patient { get; set; } = null!;

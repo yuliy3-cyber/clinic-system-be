@@ -68,12 +68,26 @@ namespace clinic_system_be.Services
             return new ServiceResponse<string> { Success = true, Message = "User registered successfully." };
         }
 
-        public async Task<ServiceResponse<string>> Login(LoginDTO loginDTO)
+        public async Task<bool> IsUserInactive(string email)
         {
+            var user = await _userRepository.GetUserByEmail(email);
+            return user != null && user.Status == 0;
+        }
+
+        public async Task<ServiceResponse<object>> Login(LoginDTO loginDTO)
+        {
+            if (await IsUserInactive(loginDTO.Email))
+            {
+                return new ServiceResponse<object>
+                {
+                    Success = false,
+                    Message = "User is inactive and cannot log in."
+                };
+            }
             var user = await _userRepository.GetUserByEmail(loginDTO.Email);
             if (user == null || !VerifyPassword(loginDTO.Password, user.Password))
             {
-                return new ServiceResponse<string> { Success = false, Message = "Invalid credentials." };
+                return new ServiceResponse<object> { Success = false, Message = "Invalid credentials." };
             }
 
             //Generate JWT Token
@@ -84,6 +98,7 @@ namespace clinic_system_be.Services
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.Role),
                 new Claim("UserId", user.UserId.ToString()),
             };
 
@@ -98,7 +113,18 @@ namespace clinic_system_be.Services
                 signingCredentials: creds);
 
             var token = new JwtSecurityTokenHandler().WriteToken(preparedToken);
-            return new ServiceResponse<string> { Success = true, Message = "Login successful.", Data = token };
+            var data = new
+            {
+                Token = token,
+                UserId = user.UserId,
+                Role = user.Role
+            };
+            return new ServiceResponse<object>
+            {
+                Success = true,
+                Message = "Login successful.",
+                Data = data
+            };
         }
 
         public Task<ServiceResponse<string>> Logout()

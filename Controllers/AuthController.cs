@@ -32,7 +32,7 @@ namespace clinic_system_be.Controllers
             var result = await _authService.Login(loginDTO);
             if (!result.Success)
             {
-                return Unauthorized(result.Message);
+                return Unauthorized(new { message = result.Message });
             }
             return Ok(result);
         }
