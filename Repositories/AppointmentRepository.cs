@@ -67,6 +67,8 @@ namespace clinic_system_be.Repositories
             return await _context.Appointments
                 .Include(a => a.Doctor)
                 .Include(a => a.Patient)
+                .Include(a => a.Prescription)
+                .ThenInclude(p => p.PrescriptionDetails)
                 .FirstOrDefaultAsync(a => a.AppointmentId == id);
         }
 
@@ -99,6 +101,7 @@ namespace clinic_system_be.Repositories
                 Status = appointment.Status,
                 Diagnosis = appointment.Diagnosis,
                 Description = appointment.Description,
+                PrescriptionId = appointment.PrescriptionId
             };
             _context.Appointments.Update(newAppointment);
             await _context.SaveChangesAsync();

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 namespace clinic_system_be.Models;
 
@@ -17,6 +15,10 @@ public partial class Prescription
 
     [StringLength(1000)]
     public string? Description { get; set; }
+
+    [JsonIgnore]
+    [InverseProperty("Prescription")]
+    public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
 
     [InverseProperty("Prescription")]
     public virtual ICollection<PrescriptionDetail> PrescriptionDetails { get; set; } = new List<PrescriptionDetail>();

@@ -19,5 +19,6 @@ namespace clinic_system_be.DTOs.Appointment
         public int Status { get; set; }
         [StringLength(1000)]
         public string? Description { get; set; }
+        public int PrescriptionId { get; set; }
     }
 }

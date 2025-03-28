@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 namespace clinic_system_be.Models;
 
@@ -20,6 +18,7 @@ public partial class PrescriptionDetail
     [StringLength(255)]
     public string Dosage { get; set; } = null!;
 
+    [JsonIgnore]
     [ForeignKey("PrescriptionId")]
     [InverseProperty("PrescriptionDetails")]
     public virtual Prescription Prescription { get; set; } = null!;

@@ -24,12 +24,19 @@ public partial class Appointment
     [StringLength(1000)]
     public string? Description { get; set; }
 
+    public int? PrescriptionId { get; set; }
+
     //[JsonIgnore]
     [ForeignKey("DoctorId")]
     [InverseProperty("AppointmentDoctors")]
     public virtual User Doctor { get; set; } = null!;
+
     //[JsonIgnore]
     [ForeignKey("PatientId")]
     [InverseProperty("AppointmentPatients")]
     public virtual User Patient { get; set; } = null!;
+
+    [ForeignKey("PrescriptionId")]
+    [InverseProperty("Appointments")]
+    public virtual Prescription? Prescription { get; set; }
 }
